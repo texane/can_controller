@@ -137,7 +137,6 @@ signal can_ale: std_logic;
 signal can_rd: std_logic;
 signal can_wr: std_logic;
 signal can_port: std_logic_vector(7 downto 0);
-signal can_port_FIXME: std_logic_vector(7 downto 0);
 signal can_cs: std_logic;
 signal can_bus_off_on: std_logic;
 signal can_irq_on: std_logic;
@@ -251,7 +250,7 @@ port map
  ale_i => can_ale,
  rd_i => can_rd,
  wr_i => can_wr,
- port_0_io => can_port_FIXME,
+ port_0_io => can_port,
  cs_can_i => can_cs,
  clk_i => clk,
  rx_i => can_rx,
