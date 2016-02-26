@@ -1,7 +1,9 @@
 --
 -- controller interface documentation:
--- http://www.nxp.com/documents/application_note/AN97076.pdf
 -- 8051 MCU to SJA1000 standalone CAN controller
+-- http://www.nxp.com/documents/application_note/AN97076.pdf
+-- http://www.e-lab.de/downloads/DOCs/PCA82C200.pdf
+-- http://web.mit.edu/6.115/www/document/8051.pdf
 
 --
 -- can_top.v expected to interface either as a wishbone or 8051 8 bit slave
