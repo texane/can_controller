@@ -6,6 +6,25 @@
 -- http://web.mit.edu/6.115/www/document/8051.pdf
 
 --
+-- MCR: mode control register
+-- address: 0x00
+-- bit<0>: RM_RR, reset mode / request bit
+-- bit<1>:
+-- bit<2>:
+-- bit<3>:
+-- bit<4>:
+
+--
+-- CMR: command register
+-- address: 0x01
+-- bit<0>: TR, transmit request
+-- bit<1>: AT, abort transmit
+
+--
+-- controller reset procedure
+-- while ((MCR & RM_RR_MASK) == 0x00) MCR |= RM_RR_bit;
+
+--
 -- can_top.v expected to interface either as a wishbone or 8051 8 bit slave
 -- cs_can: chip select
 -- ale: address latch enable. high to address slave register
@@ -74,7 +93,6 @@ port
  -- clocking
  clk: in std_logic;
  rst: in std_logic;
- can_clk: out std_logic;
 
  -- configuration registers
  -- TODO
@@ -160,6 +178,7 @@ type op_state_t is
  OP_CYCLE_8,
  OP_CYCLE_9,
  OP_CYCLE_A,
+ OP_CYCLE_B,
  OP_END
 );
 
@@ -169,6 +188,8 @@ signal op_next_state: op_state_t;
 alias op_tx: std_logic is op_code(work.can_pkg.OP_CODE_TX_BIT);
 alias op_rx: std_logic is op_code(work.can_pkg.OP_CODE_RX_BIT);
 alias op_conf: std_logic is op_code(work.can_pkg.OP_CODE_CONF_BIT);
+
+signal op_code_conf: std_logic_vector(2 downto 0);
 
 
 --
@@ -199,6 +220,8 @@ is begin
  op_busy <= '1';
  can_cs <= '1';
  can_ale <= not can_ale;
+ can_wr <= '0';
+ can_rd <= '0';
 
  if can_ale = '0' then -- addressing phase
 
@@ -239,7 +262,6 @@ end procedure;
 
 begin
 
-
 --
 -- can_top.v
 
@@ -260,15 +282,13 @@ port map
  clkout_o => can_clkout
 );
 
-can_clk <= can_clkout;
-
 
 --
 -- main operation fsm
 
 process
 begin
- wait until rising_edge(can_clkout);
+ wait until rising_edge(clk);
 
  if (rst = '1') then
   op_curr_state <= OP_IDLE;
@@ -347,6 +367,15 @@ begin
 
   when OP_CYCLE_A =>
    if can_ale = '1' then
+    if op_rx = '1' then
+     op_next_state <= OP_END;
+    else
+     op_next_state <= OP_CYCLE_B;
+    end if;
+   end if;
+
+  when OP_CYCLE_B =>
+   if can_ale = '1' then
     op_next_state <= OP_END;
    end if;
 
@@ -360,9 +389,11 @@ begin
 end process;
 
 
+op_code_conf <= work.can_pkg.OP_CODE_CONF;
+
 process
 begin
- wait until rising_edge(can_clkout);
+ wait until rising_edge(clk);
 
  case op_curr_state is
 
@@ -371,6 +402,8 @@ begin
    op_busy <= op_en;
    can_cs <= '0';
    can_ale <= '0';
+   can_rd <= '0';
+   can_wr <= '0';
 
   when OP_CYCLE_0 =>
    gen_cycle
@@ -378,7 +411,7 @@ begin
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code,
     x"10", tx_dat(7 downto 0), rx_dat(7 downto 0),
-    x"00", x"01"
+    x"00", x"01" -- MCR.RM_RR = 1
    );
 
   when OP_CYCLE_1 =>
@@ -469,6 +502,15 @@ begin
     op_done, op_busy, op_code,
     x"1a", tx_dat(87 downto 80), rx_dat(87 downto 80),
     x"00", x"00"
+   );
+
+  when OP_CYCLE_B =>
+   gen_cycle
+   (
+    can_cs, can_ale, can_rd, can_wr, can_port,
+    op_done, op_busy, op_code_conf,
+    x"00", tx_dat(87 downto 80), rx_dat(87 downto 80),
+    x"01", x"01"
    );
 
   when OP_END =>

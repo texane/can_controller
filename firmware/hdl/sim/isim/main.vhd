@@ -30,7 +30,6 @@ signal clk: std_ulogic;
 --
 -- controller signals
 
-signal can_clk: std_logic;
 signal tx_dat: std_logic_vector(87 downto 0);
 signal rx_dat: std_logic_vector(87 downto 0);
 signal rx_irq: std_logic;
@@ -76,7 +75,6 @@ port map
 (
  clk => clk,
  rst => rst,
- can_clk => can_clk,
  tx_dat => tx_dat,
  rx_dat => rx_dat,
  rx_irq => rx_irq,

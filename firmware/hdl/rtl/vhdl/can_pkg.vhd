@@ -28,7 +28,6 @@ port
  -- clocking
  clk: in std_logic;
  rst: in std_logic;
- can_clk: out std_logic;
 
  -- configuration registers
  -- TODO
