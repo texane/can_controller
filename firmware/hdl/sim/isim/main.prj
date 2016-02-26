@@ -1,0 +1,17 @@
+verilog work ../../rtl/verilog/can_defines.v
+verilog work ../../rtl/verilog/can_acf.v
+verilog work ../../rtl/verilog/can_bsp.v
+verilog work ../../rtl/verilog/can_btl.v
+verilog work ../../rtl/verilog/can_crc.v
+verilog work ../../rtl/verilog/can_fifo.v
+verilog work ../../rtl/verilog/can_ibo.v
+verilog work ../../rtl/verilog/can_register_asyn_syn.v
+verilog work ../../rtl/verilog/can_register_asyn.v
+verilog work ../../rtl/verilog/can_registers.v
+verilog work ../../rtl/verilog/can_register_syn.v
+verilog work ../../rtl/verilog/can_register.v
+verilog work ../../rtl/verilog/can_top.v
+vhdl work ../../rtl/vhdl/can_pkg.vhd
+vhdl work ../../rtl/vhdl/can_controller.vhd
+
+vhdl work ./main.vhd
