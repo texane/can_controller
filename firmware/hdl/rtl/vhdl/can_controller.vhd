@@ -98,11 +98,11 @@ port
  -- TODO
 
  -- transmit registers
- tx_dat: in std_logic_vector(87 downto 0);
+ tx_dat: in std_logic_vector(79 downto 0);
 
  -- receive registers
- rx_dat: out std_logic_vector(87 downto 0);
- rx_irq: in std_logic;
+ rx_dat: out std_logic_vector(79 downto 0);
+ rx_irq: out std_logic;
 
  -- operation control and status
  -- op_en: 1 to start operation
@@ -179,6 +179,8 @@ type op_state_t is
  OP_CYCLE_9,
  OP_CYCLE_A,
  OP_CYCLE_B,
+ OP_CYCLE_C,
+ OP_CYCLE_D,
  OP_END
 );
 
@@ -190,7 +192,11 @@ alias op_rx: std_logic is op_code(work.can_pkg.OP_CODE_RX_BIT);
 alias op_conf: std_logic is op_code(work.can_pkg.OP_CODE_CONF_BIT);
 
 signal op_code_conf: std_logic_vector(2 downto 0);
+signal op_code_rx: std_logic_vector(2 downto 0);
 
+signal dummy_rdat: std_logic_vector(7 downto 0);
+signal dummy_wdat: std_logic_vector(7 downto 0);
+constant dummy_addr: std_logic_vector(7 downto 0) := x"00";
 
 --
 -- generate a cycle
@@ -226,31 +232,22 @@ is begin
  if can_ale = '0' then -- addressing phase
 
   if op_code(work.can_pkg.OP_CODE_TX_BIT) = '1' then
-   can_rd <= '0';
-   can_wr <= '1';
    can_port <= txrx_addr;
   elsif op_code(work.can_pkg.OP_CODE_RX_BIT) = '1' then
-   can_rd <= '1';
-   can_wr <= '0';
    can_port <= txrx_addr;
   else -- if op_conf = '1' then
-   can_rd <= '0';
-   can_wr <= '1';
    can_port <= conf_addr;
   end if;
 
  else -- data phase
 
   if op_code(work.can_pkg.OP_CODE_TX_BIT) = '1' then
-   can_rd <= '0';
    can_wr <= '1';
    can_port <= tx_data;
   elsif op_code(work.can_pkg.OP_CODE_RX_BIT) = '1' then
    can_rd <= '1';
-   can_wr <= '0';
    rx_data <= can_port;
   else -- if op_conf = '1' then
-   can_rd <= '0';
    can_wr <= '1';
    can_port <= conf_data;
   end if;
@@ -299,7 +296,7 @@ begin
 end process;
 
 
-process(op_curr_state, op_en, op_conf, can_ale)
+process(op_curr_state, op_en, op_conf, can_ale, can_irq_on)
 begin
 
  op_next_state <= op_curr_state;
@@ -376,6 +373,16 @@ begin
 
   when OP_CYCLE_B =>
    if can_ale = '1' then
+    op_next_state <= OP_CYCLE_C;
+   end if;
+
+  when OP_CYCLE_C =>
+   if can_irq_on = '0' then
+    op_next_state <= OP_CYCLE_D;
+   end if;
+
+  when OP_CYCLE_D =>
+   if can_ale = '1' then
     op_next_state <= OP_END;
    end if;
 
@@ -390,6 +397,8 @@ end process;
 
 
 op_code_conf <= work.can_pkg.OP_CODE_CONF;
+op_code_rx <= work.can_pkg.OP_CODE_RX;
+dummy_wdat <= (others => '0');
 
 process
 begin
@@ -410,8 +419,8 @@ begin
    (
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code,
-    x"10", tx_dat(7 downto 0), rx_dat(7 downto 0),
-    x"00", x"01" -- MCR.RM_RR = 1
+    x"0a", tx_dat(7 downto 0), rx_dat(7 downto 0),
+    x"00", x"01" -- MCR.RM_RR
    );
 
   when OP_CYCLE_1 =>
@@ -419,7 +428,7 @@ begin
    (
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code,
-    x"11", tx_dat(15 downto 8), rx_dat(15 downto 8),
+    x"0b", tx_dat(15 downto 8), rx_dat(15 downto 8),
     x"1f", x"07"
    );
 
@@ -428,7 +437,7 @@ begin
    (
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code,
-    x"12", tx_dat(23 downto 16), rx_dat(23 downto 16),
+    x"0c", tx_dat(23 downto 16), rx_dat(23 downto 16),
     x"06", x"01"
    );
 
@@ -437,7 +446,7 @@ begin
    (
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code,
-    x"13", tx_dat(31 downto 24), rx_dat(31 downto 24),
+    x"0d", tx_dat(31 downto 24), rx_dat(31 downto 24),
     x"04", x"00"
    );
 
@@ -446,7 +455,7 @@ begin
    (
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code,
-    x"14", tx_dat(39 downto 32), rx_dat(39 downto 32),
+    x"0e", tx_dat(39 downto 32), rx_dat(39 downto 32),
     x"05", x"00"
    );
 
@@ -455,7 +464,7 @@ begin
    (
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code,
-    x"15", tx_dat(47 downto 40), rx_dat(47 downto 40),
+    x"0f", tx_dat(47 downto 40), rx_dat(47 downto 40),
     x"07", x"7f"
    );
 
@@ -464,8 +473,8 @@ begin
    (
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code,
-    x"16", tx_dat(55 downto 48), rx_dat(55 downto 48),
-    x"00", x"00"
+    x"10", tx_dat(55 downto 48), rx_dat(55 downto 48),
+    x"00", x"04" -- MCR.TIE
    );
 
   when OP_CYCLE_7 =>
@@ -473,7 +482,7 @@ begin
    (
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code,
-    x"17", tx_dat(63 downto 56), rx_dat(63 downto 56),
+    x"11", tx_dat(63 downto 56), rx_dat(63 downto 56),
     x"00", x"00"
    );
 
@@ -482,7 +491,7 @@ begin
    (
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code,
-    x"18", tx_dat(71 downto 64), rx_dat(71 downto 64),
+    x"12", tx_dat(71 downto 64), rx_dat(71 downto 64),
     x"00", x"00"
    );
 
@@ -491,7 +500,7 @@ begin
    (
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code,
-    x"19", tx_dat(79 downto 72), rx_dat(79 downto 72),
+    x"13", tx_dat(79 downto 72), rx_dat(79 downto 72),
     x"00", x"00"
    );
 
@@ -499,9 +508,9 @@ begin
    gen_cycle
    (
     can_cs, can_ale, can_rd, can_wr, can_port,
-    op_done, op_busy, op_code,
-    x"1a", tx_dat(87 downto 80), rx_dat(87 downto 80),
-    x"00", x"00"
+    op_done, op_busy, op_code_conf,
+    dummy_addr, dummy_wdat, dummy_rdat,
+    x"00", x"1e" -- enable irqs (basic mode)
    );
 
   when OP_CYCLE_B =>
@@ -509,15 +518,34 @@ begin
    (
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code_conf,
-    x"00", tx_dat(87 downto 80), rx_dat(87 downto 80),
-    x"01", x"01"
+    dummy_addr, dummy_wdat, dummy_rdat,
+    x"01", x"03" -- transmit (x"03" for single shot mode)
+   );
+
+  when OP_CYCLE_C =>
+   op_done <= '0';
+   op_busy <= '1';
+   can_cs <= '0';
+   can_ale <= '0';
+   can_rd <= '0';
+   can_wr <= '0';
+
+  when OP_CYCLE_D =>
+   gen_cycle
+   (
+    can_cs, can_ale, can_rd, can_wr, can_port,
+    op_done, op_busy, op_code_rx,
+    x"03", dummy_wdat, dummy_rdat,
+    x"00", x"00"
    );
 
   when OP_END =>
+   op_done <= '1';
    op_busy <= '0';
    can_cs <= '0';
    can_ale <= '0';
-   op_done <= '1';
+   can_rd <= '0';
+   can_wr <= '0';
 
   when others =>
 

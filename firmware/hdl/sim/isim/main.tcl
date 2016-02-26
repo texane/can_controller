@@ -32,29 +32,40 @@ wave add /main/rst
 wave add /main/can_rx
 wave add /main/can_tx
 
-wave add /main/can_controller/can_irq_on
-wave add /main/can_controller/can_bus_off_on
-
 wave add /main/can_controller/op_en
-wave add /main/can_controller/op_busy
-wave add /main/can_controller/op_done
+# wave add /main/can_controller/op_busy
+# wave add /main/can_controller/op_done
 
 wave add /main/can_controller/can_wr
 wave add /main/can_controller/can_ale
 wave add /main/can_controller/can_cs
 wave add /main/can_controller/can_port
 
-wave add /main/can_controller/op_curr_state
+# wave add /main/can_controller/op_curr_state
 
-wave add /main/can_controller/can_top_v/clk_i
+# wave add /main/can_controller/can_top_v/clk_i
 wave add /main/can_controller/can_top_v/addr_latched
 wave add /main/can_controller/can_top_v/data_in
 
-wave add /main/can_controller/can_top_v/i_can_registers/we_mode
-wave add /main/can_controller/can_top_v/i_can_registers/tx_request
+# wave add /main/can_controller/can_top_v/i_can_registers/we_mode
 wave add /main/can_controller/can_top_v/i_can_registers/command
 wave add /main/can_controller/can_top_v/i_can_registers/mode
 wave add /main/can_controller/can_top_v/i_can_registers/mode_basic
-wave add /main/can_controller/can_top_v/i_can_registers/mode_ext
+# wave add /main/can_controller/can_top_v/i_can_registers/mode_ext
 
-run 10 us
+wave add /main/can_controller/can_irq_on
+wave add /main/can_controller/can_top_v/i_can_registers/irq_reg
+
+wave add /main/can_controller/can_top_v/i_can_registers/status
+
+wave add /main/can_controller/can_top_v/i_can_bsp/tx_request
+wave add /main/can_controller/can_top_v/i_can_bsp/sample_point
+# wave add /main/can_controller/can_top_v/i_can_bsp/need_to_tx
+# wave add /main/can_controller/can_top_v/i_can_bsp/go_early_tx
+# wave add /main/can_controller/can_top_v/i_can_bsp/suspend
+# wave add /main/can_controller/can_top_v/i_can_bsp/rx_idle
+# wave add /main/can_controller/can_top_v/i_can_bsp/go_early_tx
+# wave add /main/can_controller/can_top_v/i_can_bsp/go_tx
+# wave add /main/can_controller/can_top_v/i_can_bsp/tx_state
+
+run 1000 us

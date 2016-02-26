@@ -33,11 +33,11 @@ port
  -- TODO
 
  -- transmit registers
- tx_dat: in std_logic_vector(87 downto 0);
+ tx_dat: in std_logic_vector(79 downto 0);
 
  -- receive registers
- rx_dat: out std_logic_vector(87 downto 0);
- rx_irq: in std_logic;
+ rx_dat: out std_logic_vector(79 downto 0);
+ rx_irq: out std_logic;
 
  -- operation control and status
  -- op_en: 1 to start operation
