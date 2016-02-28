@@ -86,4 +86,19 @@ wave add /main/can_controller/can_top_v/i_can_registers/status
 # wave add /main/can_controller/can_top_v/i_can_bsp/tx_next
 # wave add /main/can_controller/can_top_v/i_can_bsp/tx
 
+wave add /main/op_en_latch_once
+wave add /main/can_controller2/can_irq_on
+wave add /main/can_controller2/can_top_v/i_can_registers/irq_reg
+wave add /main/can_controller2/can_top_v/i_can_registers/status
+wave add /main/can_controller2/can_top_v/i_can_registers/mode_basic
+wave add /main/can_controller2/can_top_v/i_can_registers/rx_err_cnt
+wave add /main/can_controller2/can_top_v/i_can_bsp/err
+wave add /main/can_controller2/can_top_v/i_can_bsp/form_err
+wave add /main/can_controller2/can_top_v/i_can_bsp/stuff_err
+wave add /main/can_controller2/can_top_v/i_can_bsp/bit_err
+wave add /main/can_controller2/can_top_v/i_can_bsp/ack_err
+wave add /main/can_controller2/can_top_v/i_can_bsp/crc_err
+wave add /main/can_controller2/can_top_v/i_can_bsp/rx_ack
+wave add /main/can_controller2/can_top_v/i_can_bsp/tx
+
 run 300 us

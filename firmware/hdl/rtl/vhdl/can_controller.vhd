@@ -99,6 +99,7 @@ port
 
  -- configuration registers
  -- TODO
+ conf_listen: in std_logic;
 
  -- transmit registers
  tx_dat: in std_logic_vector(79 downto 0);
@@ -183,7 +184,6 @@ type op_state_t is
  OP_CYCLE_A,
  OP_CYCLE_B,
  OP_CYCLE_C,
- OP_CYCLE_D,
  OP_END
 );
 
@@ -343,16 +343,16 @@ begin
 
   when OP_CYCLE_6 =>
    if can_ale = '1' then
-    op_next_state <= OP_CYCLE_7;
+    if op_conf = '1' then
+     op_next_state <= OP_END;
+    else
+     op_next_state <= OP_CYCLE_7;
+    end if;
    end if;
 
   when OP_CYCLE_7 =>
    if can_ale = '1' then
-    if op_conf = '1' then
-     op_next_state <= OP_END;
-    else
-     op_next_state <= OP_CYCLE_8;
-    end if;
+    op_next_state <= OP_CYCLE_8;
    end if;
 
   when OP_CYCLE_8 =>
@@ -381,11 +381,6 @@ begin
 
   when OP_CYCLE_C =>
    if can_irq_on = '0' then
-    op_next_state <= OP_CYCLE_D;
-   end if;
-
-  when OP_CYCLE_D =>
-   if can_ale = '1' then
     op_next_state <= OP_END;
    end if;
 
@@ -513,19 +508,10 @@ begin
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code_conf,
     dummy_addr, dummy_wdat, dummy_rdat,
-    x"00", x"1e" -- enable all irqs (basic mode)
-   );
-
-  when OP_CYCLE_B =>
-   gen_cycle
-   (
-    can_cs, can_ale, can_rd, can_wr, can_port,
-    op_done, op_busy, op_code_conf,
-    dummy_addr, dummy_wdat, dummy_rdat,
     x"01", x"03" -- transmit (x"03" for single shot mode)
    );
 
-  when OP_CYCLE_C =>
+  when OP_CYCLE_B =>
    op_done <= '0';
    op_busy <= '1';
    can_cs <= '0';
@@ -533,7 +519,7 @@ begin
    can_rd <= '0';
    can_wr <= '0';
 
-  when OP_CYCLE_D =>
+  when OP_CYCLE_C =>
    gen_cycle
    (
     can_cs, can_ale, can_rd, can_wr, can_port,

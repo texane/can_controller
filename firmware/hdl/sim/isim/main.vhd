@@ -42,6 +42,9 @@ signal op_err: std_logic;
 signal can_rx: std_logic;
 signal can_tx: std_logic;
 
+signal rx_irq2: std_logic;
+signal can_tx2: std_logic;
+
 signal op_en_once: std_logic;
 signal op_en_latch_once: std_logic;
 
@@ -90,6 +93,7 @@ port map
 (
  clk => clk,
  rst => rst,
+ conf_listen => '0',
  tx_dat => tx_dat,
  rx_dat => rx_dat,
  rx_irq => rx_irq,
@@ -114,9 +118,10 @@ port map
 (
  clk => clk,
  rst => rst,
+ conf_listen => '1',
  tx_dat => tx_dat,
  rx_dat => rx_dat,
- rx_irq => open,
+ rx_irq => rx_irq2,
  op_en => op_en_latch_once,
  op_code => op_code,
  op_busy => open,

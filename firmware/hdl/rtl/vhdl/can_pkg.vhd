@@ -31,6 +31,7 @@ port
 
  -- configuration registers
  -- TODO
+ conf_listen: in std_logic;
 
  -- transmit registers
  tx_dat: in std_logic_vector(79 downto 0);
