@@ -159,6 +159,7 @@ signal can_ale: std_logic;
 signal can_rd: std_logic;
 signal can_wr: std_logic;
 signal can_port: std_logic_vector(7 downto 0);
+signal can_port_tmp: std_logic_vector(7 downto 0);
 signal can_cs: std_logic;
 signal can_bus_off_on: std_logic;
 signal can_irq_on: std_logic;
@@ -264,6 +265,9 @@ begin
 
 --
 -- can_top.v
+
+can_port <= can_port_tmp when ((can_cs and (not can_rd)) = '1')
+ else (others => 'Z');
 
 can_top_v: can_top
 port map
@@ -415,7 +419,7 @@ begin
   when OP_CYCLE_0 =>
    gen_cycle
    (
-    can_cs, can_ale, can_rd, can_wr, can_port,
+    can_cs, can_ale, can_rd, can_wr, can_port_tmp,
     op_done, op_busy, op_code,
     x"0a", tx_dat(7 downto 0), rx_dat(7 downto 0),
     x"00", x"01" -- MCR.RM_RR
@@ -424,7 +428,7 @@ begin
   when OP_CYCLE_1 =>
    gen_cycle
    (
-    can_cs, can_ale, can_rd, can_wr, can_port,
+    can_cs, can_ale, can_rd, can_wr, can_port_tmp,
     op_done, op_busy, op_code,
     x"0b", tx_dat(15 downto 8), rx_dat(15 downto 8),
     x"1f", x"07"
@@ -433,7 +437,7 @@ begin
   when OP_CYCLE_2 =>
    gen_cycle
    (
-    can_cs, can_ale, can_rd, can_wr, can_port,
+    can_cs, can_ale, can_rd, can_wr, can_port_tmp,
     op_done, op_busy, op_code,
     x"0c", tx_dat(23 downto 16), rx_dat(23 downto 16),
     x"06", x"01"
@@ -442,7 +446,7 @@ begin
   when OP_CYCLE_3 =>
    gen_cycle
    (
-    can_cs, can_ale, can_rd, can_wr, can_port,
+    can_cs, can_ale, can_rd, can_wr, can_port_tmp,
     op_done, op_busy, op_code,
     x"0d", tx_dat(31 downto 24), rx_dat(31 downto 24),
     x"04", x"00"
@@ -451,7 +455,7 @@ begin
   when OP_CYCLE_4 =>
    gen_cycle
    (
-    can_cs, can_ale, can_rd, can_wr, can_port,
+    can_cs, can_ale, can_rd, can_wr, can_port_tmp,
     op_done, op_busy, op_code,
     x"0e", tx_dat(39 downto 32), rx_dat(39 downto 32),
     x"05", x"00"
@@ -460,7 +464,7 @@ begin
   when OP_CYCLE_5 =>
    gen_cycle
    (
-    can_cs, can_ale, can_rd, can_wr, can_port,
+    can_cs, can_ale, can_rd, can_wr, can_port_tmp,
     op_done, op_busy, op_code,
     x"0f", tx_dat(47 downto 40), rx_dat(47 downto 40),
     x"07", x"7f"
@@ -469,7 +473,7 @@ begin
   when OP_CYCLE_6 =>
    gen_cycle
    (
-    can_cs, can_ale, can_rd, can_wr, can_port,
+    can_cs, can_ale, can_rd, can_wr, can_port_tmp,
     op_done, op_busy, op_code,
     x"10", tx_dat(55 downto 48), rx_dat(55 downto 48),
     x"00", x"1e" -- enable all irqs (basic mode)
@@ -478,7 +482,7 @@ begin
   when OP_CYCLE_7 =>
    gen_cycle
    (
-    can_cs, can_ale, can_rd, can_wr, can_port,
+    can_cs, can_ale, can_rd, can_wr, can_port_tmp,
     op_done, op_busy, op_code,
     x"11", tx_dat(63 downto 56), rx_dat(63 downto 56),
     x"00", x"00"
@@ -487,7 +491,7 @@ begin
   when OP_CYCLE_8 =>
    gen_cycle
    (
-    can_cs, can_ale, can_rd, can_wr, can_port,
+    can_cs, can_ale, can_rd, can_wr, can_port_tmp,
     op_done, op_busy, op_code,
     x"12", tx_dat(71 downto 64), rx_dat(71 downto 64),
     x"00", x"00"
@@ -496,7 +500,7 @@ begin
   when OP_CYCLE_9 =>
    gen_cycle
    (
-    can_cs, can_ale, can_rd, can_wr, can_port,
+    can_cs, can_ale, can_rd, can_wr, can_port_tmp,
     op_done, op_busy, op_code,
     x"13", tx_dat(79 downto 72), rx_dat(79 downto 72),
     x"00", x"00"
@@ -505,7 +509,7 @@ begin
   when OP_CYCLE_A =>
    gen_cycle
    (
-    can_cs, can_ale, can_rd, can_wr, can_port,
+    can_cs, can_ale, can_rd, can_wr, can_port_tmp,
     op_done, op_busy, op_code_conf,
     dummy_addr, dummy_wdat, dummy_rdat,
     x"01", x"03" -- transmit (x"03" for single shot mode)
@@ -522,7 +526,7 @@ begin
   when OP_CYCLE_C =>
    gen_cycle
    (
-    can_cs, can_ale, can_rd, can_wr, can_port,
+    can_cs, can_ale, can_rd, can_wr, can_port_tmp,
     op_done, op_busy, op_code_rx,
     x"03", dummy_wdat, dummy_rdat,
     x"00", x"00"
