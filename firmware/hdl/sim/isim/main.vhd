@@ -98,8 +98,8 @@ port map
  op_busy => op_busy,
  op_done => op_done,
  op_err => op_err,
- can_rx => can_rx,
- can_tx => can_tx
+ can_rx => can_tx, -- has to be loopbacked or wont work
+ can_tx => can_tx  -- loopback
 );
 
 

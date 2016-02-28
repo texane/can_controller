@@ -21,6 +21,9 @@ isim force add {/main/op_en} \
 -value 0 -time 4080 ns \
 -value 1 -time 5020 ns \
 -value 0 -time 5080 ns
+# uncomment to send another frame
+# -value 1 -time 305020 ns
+# -value 0 -time 305080 ns
 
 
 #
@@ -39,13 +42,14 @@ wave add /main/can_controller/op_en
 wave add /main/can_controller/can_wr
 wave add /main/can_controller/can_ale
 wave add /main/can_controller/can_cs
-wave add /main/can_controller/can_port
 
 # wave add /main/can_controller/op_curr_state
 
+# bus cycle related
 # wave add /main/can_controller/can_top_v/clk_i
-wave add /main/can_controller/can_top_v/addr_latched
-wave add /main/can_controller/can_top_v/data_in
+# wave add /main/can_controller/can_top_v/addr_latched
+# wave add /main/can_controller/can_top_v/data_in
+# wave add /main/can_controller/can_port
 
 # wave add /main/can_controller/can_top_v/i_can_registers/we_mode
 wave add /main/can_controller/can_top_v/i_can_registers/command
@@ -53,13 +57,25 @@ wave add /main/can_controller/can_top_v/i_can_registers/mode
 wave add /main/can_controller/can_top_v/i_can_registers/mode_basic
 # wave add /main/can_controller/can_top_v/i_can_registers/mode_ext
 
+# irq related
 wave add /main/can_controller/can_irq_on
 wave add /main/can_controller/can_top_v/i_can_registers/irq_reg
 
 wave add /main/can_controller/can_top_v/i_can_registers/status
 
-wave add /main/can_controller/can_top_v/i_can_bsp/tx_request
-wave add /main/can_controller/can_top_v/i_can_bsp/sample_point
+# data to be transmited
+# wave add /main/can_controller/can_top_v/i_can_registers/tx_data_0
+# wave add /main/can_controller/can_top_v/i_can_registers/tx_data_1
+
+# error related
+# wave add /main/can_controller/can_top_v/i_can_bsp/go_error_frame
+# wave add /main/can_controller/can_top_v/i_can_bsp/error_frame
+# wave add /main/can_controller/can_top_v/i_can_bsp/go_overload_frame
+# wave add /main/can_controller/can_top_v/i_can_bsp/overload_frame
+
+# tx related
+# wave add /main/can_controller/can_top_v/i_can_bsp/tx_request
+# wave add /main/can_controller/can_top_v/i_can_bsp/sample_point
 # wave add /main/can_controller/can_top_v/i_can_bsp/need_to_tx
 # wave add /main/can_controller/can_top_v/i_can_bsp/go_early_tx
 # wave add /main/can_controller/can_top_v/i_can_bsp/suspend
@@ -67,5 +83,7 @@ wave add /main/can_controller/can_top_v/i_can_bsp/sample_point
 # wave add /main/can_controller/can_top_v/i_can_bsp/go_early_tx
 # wave add /main/can_controller/can_top_v/i_can_bsp/go_tx
 # wave add /main/can_controller/can_top_v/i_can_bsp/tx_state
+# wave add /main/can_controller/can_top_v/i_can_bsp/tx_next
+# wave add /main/can_controller/can_top_v/i_can_bsp/tx
 
-run 1000 us
+run 300 us

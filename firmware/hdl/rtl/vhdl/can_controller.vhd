@@ -6,13 +6,16 @@
 -- http://web.mit.edu/6.115/www/document/8051.pdf
 
 --
+-- register mapping, from AN97076/appendix (basic mode)
+
+--
 -- MCR: mode control register
 -- address: 0x00
 -- bit<0>: RM_RR, reset mode / request bit
--- bit<1>:
--- bit<2>:
--- bit<3>:
--- bit<4>:
+-- bit<1>: RIE, rx interrupt enable
+-- bit<2>: TIE, tx interrupt enable
+-- bit<3>: EIE, error interrupt enable
+-- bit<4>: OIE, overrun interrupt enable
 
 --
 -- CMR: command register
@@ -474,7 +477,7 @@ begin
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code,
     x"10", tx_dat(55 downto 48), rx_dat(55 downto 48),
-    x"00", x"04" -- MCR.TIE
+    x"00", x"1e" -- enable all irqs (basic mode)
    );
 
   when OP_CYCLE_7 =>
@@ -510,7 +513,7 @@ begin
     can_cs, can_ale, can_rd, can_wr, can_port,
     op_done, op_busy, op_code_conf,
     dummy_addr, dummy_wdat, dummy_rdat,
-    x"00", x"1e" -- enable irqs (basic mode)
+    x"00", x"1e" -- enable all irqs (basic mode)
    );
 
   when OP_CYCLE_B =>
