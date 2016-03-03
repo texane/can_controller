@@ -39,14 +39,14 @@ signal op_code: std_logic_vector(1 downto 0);
 signal op_busy: std_logic;
 signal op_done: std_logic;
 signal op_err: std_logic;
-signal can_rx: std_logic;
+signal can_rx: std_logic_vector(3 downto 0);
 signal can_tx: std_logic;
 
+signal op_en2: std_logic;
+signal rx_dat2: std_logic_vector(79 downto 0);
+signal op_en_latch2: std_logic;
 signal rx_irq2: std_logic;
 signal can_tx2: std_logic;
-
-signal op_en_once: std_logic;
-signal op_en_latch_once: std_logic;
 
 
 begin
@@ -55,26 +55,21 @@ begin
 process
 begin
  wait until rising_edge(clk);
-
  if rst = '1' then
   op_en_latch <= '0';
  else
   op_en_latch <= op_en;
  end if;
-
 end process;
-
 
 process
 begin
  wait until rising_edge(clk);
-
  if rst = '1' then
-  op_en_once <= '0';
+  op_en_latch2 <= '0';
  else
-  op_en_once <= op_en_once or op_en_latch;
+  op_en_latch2 <= op_en2;
  end if;
-
 end process;
 
 
@@ -98,12 +93,15 @@ port map
  op_busy => op_busy,
  op_done => op_done,
  op_err => op_err,
- can_rx => can_tx, -- has to be loopbacked or wont work
- can_tx => can_tx  -- loopback
+ can_rx => can_rx(0),
+ can_tx => can_tx
 );
 
-
-op_en_latch_once <= op_en_latch and (not op_en_once);
+process
+begin
+ wait until rising_edge(clk);
+ can_rx <= (can_tx and can_tx2) & can_rx(3 downto 1);
+end process;
 
 can_controller2: work.can_pkg.controller
 port map
@@ -111,16 +109,16 @@ port map
  clk => clk,
  rst => rst,
  tx_dat => tx_dat,
- rx_dat => rx_dat,
+ rx_dat => rx_dat2,
  rx_irq => rx_irq2,
  op_regs => (others => x"00000000"),
- op_en => op_en_latch_once,
+ op_en => op_en_latch2,
  op_code => op_code,
  op_busy => open,
  op_done => open,
  op_err => open,
- can_rx => can_tx,
- can_tx => can_rx
+ can_rx => can_rx(0),
+ can_tx => can_tx2
 );
 
 

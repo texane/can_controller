@@ -332,7 +332,7 @@ is begin
   can_wr <= '0';
   can_rd <= '1';
   rd_bubble <= '0';
-  rd_bubble1 <= '1';
+  rd_bubble1 <= not rd_bubble1;
   
  end if;
  
@@ -735,7 +735,7 @@ begin
    (
     can_cs, can_ale, can_rd, can_wr, can_port_o,
     op_done, op_busy,
-    x"05", x"00"
+    x"05", x"ff"
    );
 
   when STATE_CONF_5 =>
