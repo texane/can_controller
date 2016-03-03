@@ -35,7 +35,7 @@ signal rx_dat: std_logic_vector(79 downto 0);
 signal rx_irq: std_logic;
 signal op_en: std_logic;
 signal op_en_latch: std_logic;
-signal op_code: std_logic_vector(2 downto 0);
+signal op_code: std_logic_vector(1 downto 0);
 signal op_busy: std_logic;
 signal op_done: std_logic;
 signal op_err: std_logic;
@@ -85,18 +85,14 @@ tx_dat(79 downto 48) <= x"deadbeef";
 
 
 can_controller: work.can_pkg.controller
-generic map
-(
- CLK_FREQ => CLK_FREQ
-)
 port map
 (
  clk => clk,
  rst => rst,
- conf_listen => '0',
  tx_dat => tx_dat,
  rx_dat => rx_dat,
  rx_irq => rx_irq,
+ op_regs => (others => x"00000000"),
  op_en => op_en_latch,
  op_code => op_code,
  op_busy => op_busy,
@@ -110,18 +106,14 @@ port map
 op_en_latch_once <= op_en_latch and (not op_en_once);
 
 can_controller2: work.can_pkg.controller
-generic map
-(
- CLK_FREQ => CLK_FREQ
-)
 port map
 (
  clk => clk,
  rst => rst,
- conf_listen => '1',
  tx_dat => tx_dat,
  rx_dat => rx_dat,
  rx_irq => rx_irq2,
+ op_regs => (others => x"00000000"),
  op_en => op_en_latch_once,
  op_code => op_code,
  op_busy => open,
